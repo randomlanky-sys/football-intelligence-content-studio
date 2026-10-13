@@ -1,0 +1,34 @@
+{
+  "name": "@fics/data-import",
+  "version": "0.1.0",
+  "description": "Data import utilities: CSV/JSON import, mapping, validation",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@fics/schema": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "eslint": "^9.15.0",
+    "typescript": "~5.7.0",
+    "vitest": "2.1.5"
+  },
+  "keywords": [
+    "fics",
+    "data",
+    "import",
+    "csv",
+    "json"
+  ],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

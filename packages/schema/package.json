@@ -1,0 +1,24 @@
+{
+  "name": "@fics/schema",
+  "version": "0.1.0",
+  "description": "Shared Zod schemas, JSON Schema, and OpenAPI definitions",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "test": "echo \"No tests for schema\""
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "eslint": "^9.15.0"
+  },
+  "keywords": ["fics", "schema", "zod", "openapi"],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "@fics/timebase",
+  "version": "0.1.0",
+  "description": "Deterministic integer-microseconds timebase with VFR-safe PTS tables",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "vitest": "2.1.5"
+  },
+  "keywords": ["fics", "timebase", "time", "microseconds"],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

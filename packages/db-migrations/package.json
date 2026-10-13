@@ -1,0 +1,29 @@
+{
+  "name": "@fics/db-migrations",
+  "version": "0.1.0",
+  "description": "Drizzle ORM migrations for Football Intelligence & Content Studio",
+  "main": "./drizzle.config.ts",
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "generate": "drizzle-kit generate:pg",
+    "migrate": "drizzle-kit migrate:pg"
+  },
+  "dependencies": {
+    "pg": "^8.12.0",
+    "@fics/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.3",
+    "typescript": "~5.7.0",
+    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "drizzle-orm": "^0.33.0",
+    "drizzle-kit": "^0.24.0"
+  },
+  "keywords": ["fics", "database", "migrations", "drizzle", "postgres"],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

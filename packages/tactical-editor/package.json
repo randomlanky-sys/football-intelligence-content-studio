@@ -1,0 +1,25 @@
+{
+  "name": "@fics/tactical-editor",
+  "version": "0.1.0",
+  "description": "Tactical editor utilities: keyframe management, annotation tools, etc.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "vitest": "2.1.5"
+  },
+  "keywords": ["fics", "tactical", "editor", "keyframe", "annotation"],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

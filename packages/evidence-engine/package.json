@@ -1,0 +1,27 @@
+{
+  "name": "@fics/evidence-engine",
+  "version": "0.1.0",
+  "description": "Evidence engine: hashing, review states, evidence linking",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@fics/schema": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "vitest": "2.1.5"
+  },
+  "keywords": ["fics", "evidence", "hashing", "review", "state"],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}

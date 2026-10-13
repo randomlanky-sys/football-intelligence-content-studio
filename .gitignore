@@ -1,0 +1,13 @@
+node_modules/
+.turbo/
+*.db
+*.sqlite
+.env
+.env.local
+.env.production
+.pnpm-lock.yaml
+.yarn/releases/
+.next/
+/app/
+/dist/
+/build/

@@ -1,0 +1,27 @@
+{
+  "name": "@fics/project-core",
+  "version": "0.1.0",
+  "description": "Core project logic: command log, snapshots, migrations, recovery, export/import",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "~5.7.0",
+    "eslint": "^9.15.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "vitest": "2.1.5"
+  },
+  "keywords": ["fics", "project", "core", "command", "log"],
+  "publishConfig": {
+    "access": "restricted"
+  }
+}
