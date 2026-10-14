@@ -14,6 +14,130 @@ export interface StoragePlugin {
 }
 
 /**
+ * Zapier storage plugin - integrates with Zapier for workflow automation.
+ */
+export class ZapierStoragePlugin extends CloudStoragePlugin {
+  private apiKey: string;
+  private zapierUrl: string;
+
+  constructor(apiKey: string, zapierUrl = 'https://zapier.com/api') {
+    super();
+    this.apiKey = apiKey;
+    this.zapierUrl = zapierUrl;
+  }
+
+  getBucketName(): string {
+    return 'zapier';
+  }
+
+  getAuthToken(): string {
+    return this.apiKey;
+  }
+
+  async save(key: string, value: any): Promise<void> {
+    console.log(`[Zapier] Saving key="${key}"`, value);
+    // In production, would call Zapier webhook or API
+    return Promise.resolve();
+  }
+
+  async load(key: string): Promise<any> {
+    console.log(`[Zapier] Loading key="${key}"`);
+    return Promise.resolve(null);
+  }
+
+  async delete(key: string): Promise<void> {
+    console.log(`[Zapier] Deleting key="${key}"`);
+    return Promise.resolve();
+  }
+}
+
+/**
+ * YouTube data API plugin.
+ */
+export class YouTubeDataPlugin {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async searchVideos(query: string, maxResults: number = 5): Promise<any> {
+    console.log(`[YouTube] Searching for: "${query}"`, maxResults);
+    // In production, would call YouTube Data API
+    return Promise.resolve({ items: [] });
+  }
+
+  async getVideoDetails(videoId: string): Promise<any> {
+    console.log(`[YouTube] Getting details for video: ${videoId}`);
+    return Promise.resolve({});
+  }
+}
+
+/**
+ * X (Twitter) API plugin.
+ */
+export class XApiPlugin {
+  private apiKey: string;
+  private apiSecret: string;
+  private accessToken: string;
+  private accessTokenSecret: string;
+
+  constructor(apiKey: string, apiSecret: string, accessToken: string, accessTokenSecret: string) {
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
+    this.accessToken = accessToken;
+    this.accessTokenSecret = accessTokenSecret;
+  }
+
+  async postTweet(text: string): Promise<void> {
+    console.log(`[X] Posting tweet:`, text);
+    return Promise.resolve();
+  }
+
+  async searchTweets(query: string): Promise<any> {
+    console.log(`[X] Searching for: "${query}"`);
+    return Promise.resolve({ tweets: [] });
+  }
+}
+
+/**
+ * Snapchat API plugin.
+ */
+export class SnapchatAPIPlugin {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async sendSnap(caption: string, mediaUrl: string): Promise<void> {
+    console.log(`[Snapchat] Sending snap with caption: "${caption}"`, mediaUrl);
+    return Promise.resolve();
+  }
+}
+
+/**
+ * TikTok API plugin.
+ */
+export class TikTokAPIPlugin {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async postVideo(title: string, description: string): Promise<void> {
+    console.log(`[TikTok] Posting video: "${title}"`, description);
+    return Promise.resolve();
+  }
+
+  async getTrending(): Promise<any> {
+    console.log('[TikTok] Getting trending videos');
+    return Promise.resolve({ videos: [] });
+  }
+}
+
+/**
  * Local storage plugin using IndexedDB (browser).
  */
 export class IndexedDBStoragePlugin implements StoragePlugin {
@@ -158,6 +282,92 @@ export class FacebookMessagingPlugin {
   async sendMessage(recipientId: string, text: string): Promise<void> {
     console.log(`[Facebook] Sending message to recipient ${recipientId}:`, text);
     return Promise.resolve();
+  }
+}
+
+/**
+ * YouTube data API plugin.
+ */
+export class YouTubeDataPlugin {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async searchVideos(query: string, maxResults: number = 5): Promise<any> {
+    console.log(`[YouTube] Searching for: "${query}"`, maxResults);
+    // In production, would call YouTube Data API
+    return Promise.resolve({ items: [] });
+  }
+
+  async getVideoDetails(videoId: string): Promise<any> {
+    console.log(`[YouTube] Getting details for video: ${videoId}`);
+    return Promise.resolve({});
+  }
+}
+
+/**
+ * X (Twitter) API plugin.
+ */
+export class XApiPlugin {
+  private apiKey: string;
+  private apiSecret: string;
+  private accessToken: string;
+  private accessTokenSecret: string;
+
+  constructor(apiKey: string, apiSecret: string, accessToken: string, accessTokenSecret: string) {
+    this.apiKey = apiKey;
+    this.apiSecret = apiSecret;
+    this.accessToken = accessToken;
+    this.accessTokenSecret = accessTokenSecret;
+  }
+
+  async postTweet(text: string): Promise<void> {
+    console.log(`[X] Posting tweet:`, text);
+    return Promise.resolve();
+  }
+
+  async searchTweets(query: string): Promise<any> {
+    console.log(`[X] Searching for: "${query}"`);
+    return Promise.resolve({ tweets: [] });
+  }
+}
+
+/**
+ * Snapchat API plugin.
+ */
+export class SnapchatAPIPlugin {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async sendSnap(caption: string, mediaUrl: string): Promise<void> {
+    console.log(`[Snapchat] Sending snap with caption: "${caption}"`, mediaUrl);
+    return Promise.resolve();
+  }
+}
+
+/**
+ * TikTok API plugin.
+ */
+export class TikTokAPIPlugin {
+  private apiKey: string;
+
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
+  }
+
+  async postVideo(title: string, description: string): Promise<void> {
+    console.log(`[TikTok] Posting video: "${title}"`, description);
+    return Promise.resolve();
+  }
+
+  async getTrending(): Promise<any> {
+    console.log('[TikTok] Getting trending videos');
+    return Promise.resolve({ videos: [] });
   }
 }
 

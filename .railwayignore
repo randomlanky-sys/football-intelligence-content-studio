@@ -1,0 +1,16 @@
+node_modules/
+.pnpm-lock.yaml
+turbo.json
+turbo.lockfile
+*.db
+*.sqlite
+.env
+.env.local
+.env.production
+**/e2e/
+**/test-output.log
+*.docx
+*.docx.txt
+*.pptx
+*.pptx.txt
+*.pdf

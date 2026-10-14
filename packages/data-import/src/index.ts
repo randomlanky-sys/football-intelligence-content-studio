@@ -73,7 +73,6 @@ export function importFromCsv(
     const obj: Record<string, any> = {};
     for (let hIndex = 0; hIndex < headers.length; hIndex++) {
       const header = headers[hIndex];
-      // $FlowFixMe $FlowExpectedError
       obj[header] = row[hIndex];
     }
     data.push(obj);

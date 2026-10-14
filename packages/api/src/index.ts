@@ -7,7 +7,19 @@ import type { projectSchema } from '@fics/schema';
 import type { mediaSchema } from '@fics/schema';
 import { schemaValidator } from './plugins/schemaValidator';
 import type { StoragePlugin } from './plugins/storagePlugin';
-import type { IndexedDBStoragePlugin, DropboxStoragePlugin, TelegramMessagingPlugin, WhatsAppMessagingPlugin, InstagramMessagingPlugin, FacebookMessagingPlugin } from './plugins/storagePlugin';
+import type { 
+  IndexedDBStoragePlugin, 
+  DropboxStoragePlugin, 
+  TelegramMessagingPlugin, 
+  WhatsAppMessagingPlugin, 
+  InstagramMessagingPlugin, 
+  FacebookMessagingPlugin,
+  ZapierStoragePlugin,
+  YouTubeDataPlugin,
+  XApiPlugin,
+  SnapchatAPIPlugin,
+  TikTokAPIPlugin
+} from './plugins/storagePlugin';
 
 /**
  * Plugin manager - registers and manages all available plugins.
@@ -83,6 +95,9 @@ export default function buildApi(config?: ApiConfig) {
         case 'facebook':
           fastify.log.info('Facebook plugin requires Graph API token configuration');
           break;
+        case 'zapier':
+          fastify.log.info('Zapier plugin requires API key configuration');
+          break;
         default:
           fastify.log.warn(`Unknown storage plugin: ${pluginName}`);
       }
@@ -104,6 +119,18 @@ export default function buildApi(config?: ApiConfig) {
           break;
         case 'facebook':
           fastify.log.info('Facebook messaging plugin requires Graph API token');
+          break;
+        case 'youtube':
+          fastify.log.info('YouTube Data API requires API key configuration');
+          break;
+        case 'x':
+          fastify.log.info('X (Twitter) API requires API key configuration');
+          break;
+        case 'snapchat':
+          fastify.log.info('Snapchat API requires API key configuration');
+          break;
+        case 'tiktok':
+          fastify.log.info('TikTok API requires API key configuration');
           break;
         default:
           fastify.log.warn(`Unknown messaging plugin: ${pluginName}`);
