@@ -10,4 +10,5 @@ node_modules/
 .next/
 /app/
 /dist/
-/build/
+/build/packages/web/*.log
+*.tsbuildinfo
