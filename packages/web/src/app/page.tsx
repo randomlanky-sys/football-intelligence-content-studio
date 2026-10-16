@@ -1,25 +1,8 @@
-import '@/styles/globals.css'
+import Link from 'next/link'
 
 export const metadata = {
   title: 'Football Intelligence & Content Studio',
   description: 'AI-powered football match analysis and content creation studio',
-  openGraph: {
-    title: 'Football Intelligence & Content Studio',
-    description: 'Transform match data into compelling stories with AI-powered analysis',
-    images: [
-      {
-        url: '/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'Football Intelligence & Content Studio'
-      }
-    ]
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Football Intelligence & Content Studio',
-    description: 'Transform match data into compelling stories with AI-powered analysis'
-  }
 }
 
 export default function HomePage() {

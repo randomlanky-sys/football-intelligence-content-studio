@@ -1,15 +1,19 @@
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
 
 export const metadata = {
   title: 'Football Intelligence - Project Details',
   description: 'Project detail page for Football Intelligence & Content Studio',
 }
 
-export default function ProjectDetailPage() {
-  const { id } = useParams()
+export default async function ProjectDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params
 
-  const projectDetails: Record<string, any> = {
+  type ProjectDetails = { name: string; description: string; features: string[] }
+  const detailsMap: Record<string, ProjectDetails> = {
     '1': {
       name: 'Match Analysis Pro',
       description: 'AI-powered tactical breakdown engine with automated event tagging',
@@ -40,7 +44,8 @@ export default function ProjectDetailPage() {
         'Export for analysis pipelines',
       ],
     },
-  }[id] || {
+  }
+  const projectDetails: ProjectDetails = detailsMap[id] ?? {
     name: 'Project',
     description: 'Project details',
     features: ['Under construction'],
