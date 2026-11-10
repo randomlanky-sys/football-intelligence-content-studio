@@ -74,13 +74,35 @@ Additional verification:
 - E2E runs against `pnpm build && pnpm start`, so the tested artifact is the one
   that ships (not the dev compiler).
 
-Remaining, owner-gated:
+## Live deployment — 2026-11-09
 
-- **Live deployment was not performed.** Railway CLI tokens at the documented
-  vault paths returned `Unauthorized`/`Invalid RAILWAY_TOKEN` on 2026-11-09, and
-  the standing Railway policy requires the owner to name the target account in
-  the current conversation before any state-changing command. The existing
-  Railway service was created under a different account. Local production
-  server and the full E2E suite are the verified artifact until credentials and
-  the target account are confirmed.
+Railway remained blocked: both documented tokens returned `Unauthorized` /
+`Invalid RAILWAY_TOKEN`, and policy requires the owner to name the account
+in-conversation. The owner chose to deploy to the existing Render service
+instead.
+
+- Target: `https://football-intelligence-content-studio.onrender.com`
+- Service `srv-db8p7jbl550s73en66kg`, Docker runtime, branch `master`, free plan.
+- Deploy `dep-dbpao2jbc2fs739ltcbg` — commit `77deb0f` — status **live**.
+- Root cause of the stale site: the Render GitHub webhook stopped delivering
+  after the repo moved to `randomlanky-sys`, so the last deploy was still
+  `595df36` (2026-10-16). The deploy was triggered through the Render API.
+- Dockerfile fix shipped first: the image now copies the root `tsconfig.json`
+  that workspace packages extend.
+
+Live verification (`playwright.live.config.ts`, 17 tests, 1 worker):
+
+- All 12 routes return 200 with the expected `<h1>`.
+- Security headers present; `X-Powered-By` absent.
+- Studio shell: transport, timeline, pitch, `8 claims`.
+- Unknown project id shows `Project not found` and a way back.
+- Workflow A: deep link `?t=1394000000&event=evt-11` opens `Goal · 23′14`,
+  `T. Silva`, `Cited by 1 insight`; Space toggles play/pause.
+- Workflow D: export preflight blocked by `ins-06` stale → reopen → `Proposed`
+  → accept → preflight clear → content pack built with 3 evidence-backed
+  claims → `.md` downloaded and contains the evidence ledger and tactical read.
+- Workflow E: workspace backup downloads from settings.
+
+**Result: 17/17 passed in 4.5 minutes** (first request 1.5 min cold start).
+
 

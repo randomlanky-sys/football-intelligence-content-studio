@@ -94,9 +94,25 @@ production build, not the dev compiler.
 
 ## Deployment
 
-`Dockerfile` + `railway.json` build the web app. CI runs typecheck, unit tests,
-production build and Playwright on `master`. Any deployment must be verified
-live route-by-route after the build turns green.
+Live: **https://football-intelligence-content-studio.onrender.com** (Render,
+Docker runtime, branch `master`).
+
+`Dockerfile` builds the web app; `render.yaml` and `railway.json` describe the
+service. CI runs typecheck, unit tests, production build and Playwright on
+`master`.
+
+Live verification is a separate suite that points at the deployed host:
+
+```bash
+cd packages/web
+$env:LIVE_BASE_URL='https://football-intelligence-content-studio.onrender.com'
+pnpm exec playwright test -c playwright.live.config.ts
+```
+
+It checks all 12 routes, security headers, the studio shell, the deep link, the
+stale → reopen → accept → export flow with a real `.md` download, and the
+workspace backup. A deployment is only accepted when that suite is green.
+
 
 ## Documents
 
