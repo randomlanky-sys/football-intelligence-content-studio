@@ -8,7 +8,7 @@ RUN corepack enable && corepack prepare pnpm@9.14.0 --activate
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json tsconfig.json ./
 COPY packages ./packages
 
 RUN pnpm install --frozen-lockfile --filter @fics/web...
