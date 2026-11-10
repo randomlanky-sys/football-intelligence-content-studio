@@ -53,6 +53,17 @@ Requires Node 22+ and pnpm 9+.
 The web app imports workspace packages directly (`transpilePackages`); there are
 no `src` path aliases from the app into packages.
 
+### API service
+
+```bash
+pnpm --filter @fics/api build
+PORT=3000 pnpm --filter @fics/api start
+```
+
+`GET /healthz`, `GET /readyz`, `GET /v1/plugins`, and CRUD at `/v1/projects`
+(ETag / `If-Match`), `/v1/media`. The only environment variable is `PORT`
+(default `3000`).
+
 ## Data safety model
 
 - Versioned envelope `fics.workspace.v2` (schema version `2`) in `localStorage`.

@@ -36,6 +36,16 @@ test.describe('public routes', () => {
       await expect(page.getByRole('link', { name: 'Open the demo match' }).first()).toBeVisible();
     });
   }
+
+  test('security headers are set and the framework banner is hidden', async ({ page }) => {
+    const response = await page.goto('/');
+    const headers = response?.headers() ?? {};
+    expect(headers['x-content-type-options']).toBe('nosniff');
+    expect(headers['x-frame-options']).toBe('DENY');
+    expect(headers['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(headers['content-security-policy']).toContain("frame-ancestors 'none'");
+    expect(headers['x-powered-by']).toBeUndefined();
+  });
 });
 
 test.describe('workspace routes', () => {
