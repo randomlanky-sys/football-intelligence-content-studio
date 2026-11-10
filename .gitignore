@@ -11,4 +11,9 @@ node_modules/
 /app/
 /dist/
 /build/packages/web/*.log
+packages/web/*.log
 *.tsbuildinfo
+test-results/
+playwright-report/
+blob-report/
+.playwright/

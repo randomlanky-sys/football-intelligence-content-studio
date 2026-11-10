@@ -2,109 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom variables and utilities */
 :root {
-  --background: 0 0% 10%;
-  --surface: 0 0% 5%;
-  --accent: 45 95% 52%;
-  --text-primary: 0 0% 98%;
-  --text-secondary: 0 0% 55%;
-  --text-tertiary: 0 0% 40%;
-  --border: 0 0% 15%;
-  --hover: 0 0% 12%;
+  --bg: #07090c;
+  --surface: #0d1117;
+  --surface-2: #131a22;
+  --line: #1f2933;
+  --text: #e8eef4;
+  --muted: #9aa7b4;
+  --dim: #66727f;
+  --accent: #c6f24e;
+  --accent-ink: #0a0f05;
+  --cyan: #4cc9f0;
+  --amber: #ffb020;
+  --red: #ff5d5d;
+  --green: #35d07f;
+  color-scheme: dark;
 }
 
-/* Custom animations */
-@keyframes starfield {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-200px);
-  }
+* {
+  border-color: var(--line);
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-20px) rotate(10deg);
-  }
+html {
+  scroll-behavior: smooth;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.1);
-  }
+body {
+  background:
+    radial-gradient(1100px 520px at 12% -10%, rgba(198, 242, 78, 0.07), transparent 60%),
+    radial-gradient(900px 480px at 92% 0%, rgba(76, 201, 240, 0.06), transparent 55%),
+    var(--bg);
+  color: var(--text);
+  min-height: 100vh;
 }
 
-@keyframes shimmer {
-  0% {
-    backgroundPosition: -200% 0;
-  }
-  100% {
-    backgroundPosition: 200% 0;
-  }
+::selection {
+  background: rgba(198, 242, 78, 0.28);
+  color: #fff;
 }
 
-@keyframes gradient {
-  0%, 100% {
-    backgroundPosition: 0% 50%;
-  }
-  50% {
-    backgroundPosition: 100% 50%;
-  }
+a {
+  color: inherit;
 }
 
-/* Custom transitions */
-@tailwind utilities;
-
-/* Page transitions */
-.page-transition {
-  animation: fade-in 300ms ease-out;
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0ms !important;
-  }
-}
-
-/* Focus-visible styling */
-.focus-visible-visible:focus-visible {
-  outline: 2px solid #FCD34D;
+:focus-visible {
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Film grain overlay for the 3D hero */
-.film-grain {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 140px 140px;
+/* Thin, quiet scrollbars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2a3542 transparent;
 }
 
-/* Background patterns */
-.bg-pattern-stars {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3C/svg%3E");
-  background-size: 120px 120px;
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #2a3542;
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+@layer components {
+  .surface {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .surface-2 {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .label {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+
+  .hairline {
+    border-top: 1px solid var(--line);
+  }
+
+  .grid-lines {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

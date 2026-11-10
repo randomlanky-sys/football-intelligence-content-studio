@@ -1,175 +1,75 @@
-// packages/api/src/index.ts
-import Fastify from 'fastify';
-import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox';
-import type Zod from 'zod';
-
-import type { projectSchema } from '@fics/schema';
-import type { mediaSchema } from '@fics/schema';
-import { schemaValidator } from './plugins/schemaValidator';
-import type { StoragePlugin } from './plugins/storagePlugin';
-import type { 
-  IndexedDBStoragePlugin, 
-  DropboxStoragePlugin, 
-  TelegramMessagingPlugin, 
-  WhatsAppMessagingPlugin, 
-  InstagramMessagingPlugin, 
-  FacebookMessagingPlugin,
-  ZapierStoragePlugin,
-  YouTubeDataPlugin,
-  XApiPlugin,
-  SnapchatAPIPlugin,
-  TikTokAPIPlugin
-} from './plugins/storagePlugin';
-
-/**
- * Plugin manager - registers and manages all available plugins.
- */
-class PluginManager {
-  private storagePlugins: Map<string, StoragePlugin> = new Map();
-  private messagingPlugins: Map<string, any> = new Map();
-
-  registerStoragePlugin(name: string, plugin: StoragePlugin): void {
-    this.storagePlugins.set(name, plugin);
-  }
-
-  registerMessagingPlugin(name: string, plugin: any): void {
-    this.messagingPlugins.set(name, plugin);
-  }
-
-  getStoragePlugin(name: string): StoragePlugin | undefined {
-    return this.storagePlugins.get(name);
-  }
-
-  getMessagingPlugin(name: string): any | undefined {
-    return this.messagingPlugins.get(name);
-  }
-
-  listStoragePlugins(): string[] {
-    return Array.from(this.storagePlugins.keys());
-  }
-
-  listMessagingPlugins(): string[] {
-    return Array.from(this.messagingPlugins.keys());
-  }
-}
+import Fastify, { type FastifyInstance } from 'fastify';
+import { ProjectRepository } from './repo.js';
+import { projectRoutes } from './routes/project.js';
+import { mediaRoutes } from './routes/media.js';
+import { listPlugins, getPlugin } from './plugins/registry.js';
 
 export interface ApiConfig {
-  storagePlugins?: string[];
-  messagingPlugins?: string[];
+  logger?: boolean;
+  repo?: ProjectRepository;
 }
 
-export default function buildApi(config?: ApiConfig) {
-  const fastify = Fastify({
-    logger: true,
-  });
-
-  // Register schema validator plugin
-  fastify.register(schemaValidator);
-
-  // Initialize plugin manager
-  const pluginManager = new PluginManager();
-
-  // Register storage plugins if configured
-  if (config?.storagePlugins) {
-    for (const pluginName of config.storagePlugins) {
-      switch (pluginName.toLowerCase()) {
-        case 'indexeddb':
-          fastify.register(() => {
-            const plugin = new IndexedDBStoragePlugin();
-            pluginManager.registerStoragePlugin('indexeddb', plugin);
-            return plugin;
-          });
-          break;
-        case 'dropbox':
-          fastify.log.info('Dropbox plugin requires token configuration');
-          break;
-        case 'telegram':
-          fastify.log.info('Telegram plugin requires bot token configuration');
-          break;
-        case 'whatsapp':
-          fastify.log.info('WhatsApp plugin requires Business API credentials');
-          break;
-        case 'instagram':
-          fastify.log.info('Instagram plugin requires Graph API token configuration');
-          break;
-        case 'facebook':
-          fastify.log.info('Facebook plugin requires Graph API token configuration');
-          break;
-        case 'zapier':
-          fastify.log.info('Zapier plugin requires API key configuration');
-          break;
-        default:
-          fastify.log.warn(`Unknown storage plugin: ${pluginName}`);
-      }
-    }
-  }
-
-  // Register messaging plugins if configured
-  if (config?.messagingPlugins) {
-    for (const pluginName of config.messagingPlugins) {
-      switch (pluginName.toLowerCase()) {
-        case 'telegram':
-          fastify.log.info('Telegram messaging plugin requires bot token');
-          break;
-        case 'whatsapp':
-          fastify.log.info('WhatsApp messaging plugin requires Business API credentials');
-          break;
-        case 'instagram':
-          fastify.log.info('Instagram messaging plugin requires Graph API token');
-          break;
-        case 'facebook':
-          fastify.log.info('Facebook messaging plugin requires Graph API token');
-          break;
-        case 'youtube':
-          fastify.log.info('YouTube Data API requires API key configuration');
-          break;
-        case 'x':
-          fastify.log.info('X (Twitter) API requires API key configuration');
-          break;
-        case 'snapchat':
-          fastify.log.info('Snapchat API requires API key configuration');
-          break;
-        case 'tiktok':
-          fastify.log.info('TikTok API requires API key configuration');
-          break;
-        default:
-          fastify.log.warn(`Unknown messaging plugin: ${pluginName}`);
-      }
-    }
-  }
-
-  // Health check route
-  fastify.get('/healthz', async () => {
-    return { status: 'ok' };
-  });
-
-  // API routes
-  fastify.get('/v1/projects', async (request, reply) => {
-    return { projects: [] };
-  });
-
-  fastify.post('/v1/projects', async (request, reply) => {
-    return { id: '1', name: 'Test Project' };
-  });
-
-  // Start the server
-  const start = async () => {
-    try {
-      await fastify.listen({ port: 3000 });
-      fastify.log.info(`Server listening on port ${fastify.server.address?.port}`);
-    } catch (err) {
-      fastify.log.error(err);
-      process.exit(1);
-    }
-  };
-
-  return {
-    fastify,
-    start,
-    pluginManager,
-    getStoragePlugins: () => pluginManager.listStoragePlugins(),
-    getMessagingPlugins: () => pluginManager.listMessagingPlugins()
-  };
+export interface Api {
+  app: FastifyInstance;
+  start: () => Promise<string>;
+  repo: ProjectRepository;
+  plugins: typeof listPlugins;
+  plugin: typeof getPlugin;
 }
 
-export { buildApi };
+/**
+ * Build the API without listening. Routes are transport-only; domain state lives
+ * in the repository so a persistent implementation can be swapped in later.
+ */
+export function buildApi(config: ApiConfig = {}): Api {
+  const app = Fastify({ logger: config.logger ?? false });
+  const repo = config.repo ?? new ProjectRepository();
+  const startedAt = Date.now();
+
+  app.addHook('onSend', async (_request, reply, payload) => {
+    reply.header('x-content-type-options', 'nosniff');
+    reply.header('x-frame-options', 'DENY');
+    reply.header('referrer-policy', 'no-referrer');
+    reply.header('cache-control', 'no-store');
+    return payload;
+  });
+
+  app.get('/healthz', async () => ({
+    status: 'ok',
+    service: 'fics-api',
+    version: '0.2.0',
+    uptimeMs: Date.now() - startedAt,
+  }));
+
+  app.get('/readyz', async (_request, reply) => {
+    const ready = repo.size >= 0;
+    if (!ready) return reply.code(503).send({ status: 'unavailable' });
+    return { status: 'ready', projects: repo.size };
+  });
+
+  app.get('/v1/plugins', async () => {
+    const plugins = listPlugins();
+    return {
+      plugins,
+      summary: {
+        total: plugins.length,
+        configured: plugins.filter((plugin) => plugin.status === 'configured').length,
+        unconfigured: plugins.filter((plugin) => plugin.status === 'unconfigured').length,
+      },
+    };
+  });
+
+  app.register(projectRoutes, { prefix: '/v1/projects', repo });
+  app.register(mediaRoutes, { prefix: '/v1/media' });
+
+  const start = async (): Promise<string> => {
+    const port = Number(process.env['PORT'] ?? 3000);
+    await app.listen({ port, host: '0.0.0.0' });
+    const address = app.server.address();
+    return typeof address === 'string' ? address : `http://0.0.0.0:${port}`;
+  };
+
+  return { app, start, repo, plugins: listPlugins, plugin: getPlugin };
+}
+
+export { buildApi as default };

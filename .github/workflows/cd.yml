@@ -1,20 +1,36 @@
 name: CD
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
 
 jobs:
   deploy:
-    needs: [CI]
+    name: Deploy to Railway
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      - run: cd packages/* && pnpm install --no-frozen-lockfile
-      - run: pnpm exec tsc --noEmit
-      - run: pnpm exec vitest run
-      - run: echo "Deploying to Supabase..."
-      - run: echo "Deploy complete"
+          node-version: 22
+
+      - name: Deploy
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          RAILWAY_PROJECT_ID: ${{ secrets.RAILWAY_PROJECT_ID }}
+          RAILWAY_SERVICE: ${{ secrets.RAILWAY_SERVICE }}
+        run: |
+          if [ -z "$RAILWAY_TOKEN" ] || [ -z "$RAILWAY_PROJECT_ID" ]; then
+            echo "Railway secrets are not configured; skipping deploy."
+            exit 0
+          fi
+          npm install --global @railway/cli
+          railway link --project "$RAILWAY_PROJECT_ID" ${RAILWAY_SERVICE:+--service "$RAILWAY_SERVICE"}
+          railway up --detach

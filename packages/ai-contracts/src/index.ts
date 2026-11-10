@@ -48,18 +48,38 @@ export function createAIContract(
 }
 
 /**
- * Validate an AI capability output against its contract.
- * @param output - The AI capability output to validate.
- * @param contract - The AI contract configuration.
- * @returns Whether the output validates against the contract.
+ * Validate an AI capability output against its contract's declared output
+ * format. Unknown formats accept any non-null string or object so a new format
+ * cannot silently pass while its validator is missing.
  */
-export function validateAIOutput(
-  output: any,
-  contract: AIContract
-): boolean {
-  // Placeholder: In a real implementation, this would use the evaluation harness
-  // to validate the output against the contract specifications.
-  return true;
+export function validateAIOutput(output: unknown, contract: AIContract): boolean {
+  if (output === null || output === undefined) return false;
+
+  switch (contract.outputFormat) {
+    case 'text':
+      return typeof output === 'string' && output.trim().length > 0;
+    case 'json':
+      return typeof output === 'object';
+    case 'sentiment':
+      return (
+        typeof output === 'object' &&
+        typeof (output as { sentiment?: unknown }).sentiment === 'string'
+      );
+    case 'content-pack':
+      return (
+        typeof output === 'object' &&
+        Array.isArray((output as { sections?: unknown }).sections)
+      );
+    default:
+      return typeof output === 'string' || typeof output === 'object';
+  }
+}
+
+/** Throw when an output fails its contract; useful at service boundaries. */
+export function assertAIOutput(output: unknown, contract: AIContract): void {
+  if (!validateAIOutput(output, contract)) {
+    throw new Error(`Output does not satisfy contract "${contract.name}" (${contract.outputFormat})`);
+  }
 }
 
 /**

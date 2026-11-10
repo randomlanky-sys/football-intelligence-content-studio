@@ -1,13 +1,2 @@
-// packages/api/src/plugins/index.ts
-export { schemaValidator } from './schemaValidator';
-export type { StoragePlugin } from './storagePlugin';
-export {
-  IndexedDBStoragePlugin,
-  CloudStoragePlugin,
-  DropboxStoragePlugin,
-  TelegramMessagingPlugin,
-  WhatsAppMessagingPlugin,
-  InstagramMessagingPlugin,
-  FacebookMessagingPlugin,
-  PluginManager
-} from './storagePlugin';
+export { listPlugins, getPlugin } from './registry.js';
+export type { PluginDescriptor, PluginCategory, PluginStatus } from './registry.js';

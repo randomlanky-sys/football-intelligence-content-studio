@@ -1,47 +1,118 @@
-// packages/ui/src/index.test.ts
-import { expect, test, describe } from 'vitest'
-import { useState, validateFormField, debounce, deepClone, formatNumber } from './index'
+import { describe, expect, test, vi } from 'vitest';
+import {
+  clamp,
+  cx,
+  debounce,
+  deepClone,
+  formatBytes,
+  formatNumber,
+  formatPercent,
+  formatRelativeTime,
+  slugify,
+  truncate,
+  validateFormField,
+} from './index';
 
-describe('UI utilities', () => {
-  test('useState returns initial value and setter', () => {
-    const [value, setValue] = useState(42);
-    expect(value).toBe(42);
-    expect(typeof setValue).toBe('function');
-    setValue(100);
-    // In a real implementation, value would be updated, but for this placeholder
-    // we just verify the function exists and returns expected types
-    expect(typeof setValue).toBe('function');
-  })
+describe('class and number helpers', () => {
+  test('cx joins truthy classes', () => {
+    expect(cx('a', false, undefined, 'b', null)).toBe('a b');
+  });
 
-  test('validateFormField validates correctly', () => {
-    expect(validateFormField('hello', 'text')).toBe(true);
-    expect(validateFormField('', 'text')).toBe(false);
-    expect(validateFormField(42, 'number')).toBe(true);
-    expect(validateFormField('test@example.com', 'email')).toBe(true);
-  })
+  test('clamp bounds values', () => {
+    expect(clamp(5, 0, 10)).toBe(5);
+    expect(clamp(-1, 0, 10)).toBe(0);
+    expect(clamp(11, 0, 10)).toBe(10);
+    expect(clamp(Number.NaN, 2, 10)).toBe(2);
+  });
 
-  test('debounce creates a debounced function', () => {
-    const count = useState(0);
-    const debounced = debounce(() => { count[1](count[0] + 1); }, 100);
-    debounced();
-    debounced();
-    // In a real implementation, the function would be debounced.
-    // For this placeholder, we just verify the function exists and is callable.
-    expect(typeof debounced).toBe('function');
-  })
-
-  test('deepClone creates a deep copy', () => {
-    const original = { name: 'test', nested: { value: 42 } };
-    const cloned = deepClone(original);
-    expect(cloned).toEqual(original);
-    // Verify it's a different object
-    expect(cloned).not.toBe(original);
-  })
-
-  test('formatNumber formats correctly', () => {
+  test('formatNumber groups thousands and keeps fractions', () => {
     expect(formatNumber(1000)).toBe('1,000');
     expect(formatNumber(1000000)).toBe('1,000,000');
     expect(formatNumber(0)).toBe('0');
     expect(formatNumber(-100)).toBe('-100');
-  })
-})
+    expect(formatNumber(1234.567, 2)).toBe('1,234.57');
+    expect(formatNumber(Number.NaN)).toBe('—');
+  });
+
+  test('formatPercent and formatBytes are human readable', () => {
+    expect(formatPercent(0.543, 1)).toBe('54.3%');
+    expect(formatBytes(512)).toBe('512 B');
+    expect(formatBytes(2048)).toBe('2.0 KB');
+    expect(formatBytes(5 * 1024 * 1024)).toBe('5.0 MB');
+  });
+});
+
+describe('validation', () => {
+  test('validateFormField validates text, number, email and url', () => {
+    expect(validateFormField('hello', 'text')).toBe(true);
+    expect(validateFormField('   ', 'text')).toBe(false);
+    expect(validateFormField(42, 'number')).toBe(true);
+    expect(validateFormField(Number.NaN, 'number')).toBe(false);
+    expect(validateFormField('test@example.com', 'email')).toBe(true);
+    expect(validateFormField('not-an-email', 'email')).toBe(false);
+    expect(validateFormField('https://example.com', 'url')).toBe(true);
+    expect(validateFormField('ftp://example.com', 'url')).toBe(false);
+  });
+});
+
+describe('timing and cloning', () => {
+  test('debounce collapses rapid calls into one trailing call', () => {
+    vi.useFakeTimers();
+    try {
+      const fn = vi.fn();
+      const debounced = debounce(fn, 100);
+      debounced('a');
+      debounced('b');
+      debounced('c');
+      expect(fn).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(99);
+      expect(fn).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(1);
+      expect(fn).toHaveBeenCalledTimes(1);
+      expect(fn).toHaveBeenCalledWith('c');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test('debounce cancel prevents the call', () => {
+    vi.useFakeTimers();
+    try {
+      const fn = vi.fn();
+      const debounced = debounce(fn, 100);
+      debounced();
+      debounced.cancel();
+      vi.advanceTimersByTime(200);
+      expect(fn).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  test('deepClone creates an independent copy', () => {
+    const original = { name: 'test', nested: { value: 42 } };
+    const cloned = deepClone(original);
+    expect(cloned).toEqual(original);
+    expect(cloned).not.toBe(original);
+    expect(cloned.nested).not.toBe(original.nested);
+  });
+});
+
+describe('text helpers', () => {
+  test('truncate keeps whole words', () => {
+    expect(truncate('the quick brown fox jumps', 15)).toBe('the quick brown…');
+    expect(truncate('short', 15)).toBe('short');
+  });
+
+  test('slugify produces stable ids', () => {
+    expect(slugify('Atlantic FC — Match 6!')).toBe('atlantic-fc-match-6');
+  });
+
+  test('formatRelativeTime handles recent and older values', () => {
+    const now = Date.parse('2026-11-09T12:00:00.000Z');
+    expect(formatRelativeTime('2026-11-09T11:59:30.000Z', now)).toBe('just now');
+    expect(formatRelativeTime('2026-11-09T11:55:00.000Z', now)).toBe('5 minutes ago');
+    expect(formatRelativeTime('2026-11-09T09:00:00.000Z', now)).toBe('3 hours ago');
+    expect(formatRelativeTime('not-a-date', now)).toBe('unknown');
+  });
+});
