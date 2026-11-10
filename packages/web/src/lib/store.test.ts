@@ -206,6 +206,17 @@ describe('insight review semantics', () => {
     expect(accepted?.status).toBe('accepted')
     expect(accepted?.displayStatus).toBe('accepted')
   })
+
+  it('raises and dismisses the external-change notice', () => {
+    const store = newStore()
+    store.load()
+
+    store.markExternalChange()
+    expect(store.getSnapshot().notice?.kind).toBe('external-change')
+
+    store.dismissNotice()
+    expect(store.getSnapshot().notice).toBeNull()
+  })
 })
 
 describe('reset and user data', () => {

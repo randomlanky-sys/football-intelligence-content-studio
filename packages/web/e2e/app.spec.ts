@@ -235,6 +235,26 @@ test.describe('storage safety', () => {
     await expect(page.getByText(/fics\.workspace\.v2\.corrupt\./)).toBeVisible();
   });
 
+  test('a write from another tab raises the reload banner', async ({ context, page }) => {
+    await page.goto('/app');
+    await expect(page.getByText(DEMO_NAME).first()).toBeVisible();
+    const other = await context.newPage();
+    await other.goto('/app');
+    await expect(other.getByText(DEMO_NAME).first()).toBeVisible();
+
+    await other.evaluate((key) => {
+      const raw = window.localStorage.getItem(key);
+      if (!raw) throw new Error('workspace missing');
+      const parsed = JSON.parse(raw) as { savedAt?: string };
+      parsed.savedAt = new Date(Date.now() + 60_000).toISOString();
+      window.localStorage.setItem(key, JSON.stringify(parsed));
+    }, STORAGE_KEY);
+
+    await expect(
+      page.getByRole('status').filter({ hasText: 'This workspace changed in another tab' }),
+    ).toBeVisible();
+  });
+
   test('a newer workspace opens read-only and refuses writes', async ({ page }) => {
     await seedStorageOnce(
       page,

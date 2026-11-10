@@ -58,9 +58,10 @@ blocker; evidence below was produced after the rebuild.
 
 Additional verification:
 
-- Playwright suite against the **production build**: 23/23 passing — all routes,
-  workflows A–F, corrupt-storage quarantine, newer-workspace read-only, mobile
-  shell with no horizontal overflow, and security headers.
+- Playwright suite against the **production build**: 24/24 passing — all routes,
+  workflows A–F, corrupt-storage quarantine, newer-workspace read-only,
+  cross-tab change banner, mobile shell with no horizontal overflow, and
+  security headers.
 - Security headers verified live in E2E: `nosniff`, `X-Frame-Options: DENY`,
   strict referrer policy, permissions policy, COOP, CSP with
   `frame-ancestors 'none'`; `X-Powered-By` removed.
